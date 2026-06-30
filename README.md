@@ -6,7 +6,7 @@
 
 A comprehensive machine learning pipeline for breast cancer classification, developed during a 30-day AICTE SAMARTHAN internship at **IIIT Bhagalpur**, under the **Department of Computer Science & Engineering**, mentored by **Dr. Suneel Kumar**.
 
-This project reproduces and extends the feature-selection-driven classification methodology proposed by Sharma & Mishra (2022) on the **Wisconsin Breast Cancer Dataset (WBCD)**, adding metaheuristic optimization, automated hyperparameter tuning, ensemble learning, explainability, and statistical validation.
+This project reproduces and extends the feature-selection-driven classification methodology on the **Wisconsin Breast Cancer Dataset (WBCD)**, adding metaheuristic optimization, automated hyperparameter tuning, ensemble learning, explainability, and statistical validation.
 
 ---
 
@@ -116,7 +116,7 @@ Full results, confusion matrices, ROC curves, and the classifier × FS-method he
 ```
 bc-classification-wbcd/
 ├── notebooks/
-│   └── bc_internship01.ipynb       # Full pipeline (34 cells)
+│   └── bc_classification.ipynb       # Full pipeline (34 cells)
 ├── data/
 │   ├── fs_comparison.csv
 │   ├── cv_results.csv
@@ -148,7 +148,7 @@ bc-classification-wbcd/
 
 ## How to Run
 
-1. Open `notebooks/bc_internship01.ipynb` in Google Colab
+1. Open `notebooks/bc_classification.ipynb` in Google Colab
 2. Run all cells sequentially — the pipeline auto-installs dependencies, mounts Drive, and loads WBCD directly from UCI (no manual download needed)
 3. Outputs (figures, CSVs, trained models) are saved to the configured `BASE_DIR`
 
@@ -171,6 +171,7 @@ jupyter notebook notebooks/bc_internship01.ipynb
 ## Reference
 
 Sharma, S., & Mishra, R. (2022). *Breast cancer classification using machine learning techniques*. [Reproduced and extended methodology]
+Majidpour, J., et al., 2024 NSGA-II-DL: *Metaheuristic optimal feature selection with deep learning framework for HER2 classification in Breast Cancer. IEEE Access*.
 
 ---
 
