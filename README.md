@@ -1,5 +1,185 @@
-# bc-internship-reproduction-enhancement
-Breast Cancer Detection Using Machine Learning <br> An open-source machine learning project leveraging Support Vector Machines (SVM) to classify breast tumors as malignant or benign, aiming to assist in early-stage diagnostic pipelines.Project OverviewEarly detection remains the most critical factor in surviving a breast cancer diagnosis. While clinical imaging like mammograms is standard practice, interpreting these complex X-rays introduces the risk of human error—leading to missed diagnoses or highly stressful false positives. This repository explores how machine learning can serve as a reliable secondary verification tool for clinicians.By training a Support Vector Machine (SVM) classifier on fine-needle aspirate (FNA) cellular characteristics, this project demonstrates how optimization techniques can refine diagnostic accuracy to help bridge the gap between engineering and medical data science.Core Concepts & Global ContextWhat is Breast Cancer?Cancer develops when genetic mutations disrupt the normal regulatory mechanisms governing cell growth. These mutated cells begin to divide and multiply uncontrollably, progressively becoming more abnormal until they cluster into a physical mass or tumor.Breast cancer originates when these malignant cells form within the breast tissue. If left unchecked, the primary danger lies in metastasis—the process where cancer cells detach and travel to distant parts of the body. Paradoxically, the primary transit route for metastasis is the lymphatic system, which is otherwise responsible for housing and transporting the body's immune cells. When cancer cells successfully navigate past the white blood cells in these vessels, they establish secondary tumors in remote organs, severely escalating the severity of the disease.While predominantly diagnosed in women, breast cancer is a biological reality for men as well. Though it occurs at significantly lower rates in male patients, the underlying mechanics, progression, and treatment approaches remain largely consistent across genders.The Global LandscapeBreast cancer is consistently categorized as the most frequently diagnosed cancer among women globally and one of the leading causes of oncology-related mortality. Modern epidemiological data highlights substantial global disparities in how the disease manifests and is managed:Regional Transitions: Developed regions—such as Western Europe and North America—historically record the highest incidence rates per capita (frequently exceeding 90 cases per 100,000 women). Conversely, regions across parts of Asia and Africa report lower baseline incidence rates but face significantly higher mortality-to-incidence ratios due to limited access to early routine screening infrastructure.The Screening Dilemma: Mammography is highly effective at reducing mortality rates for individuals aged 40 to 70. However, standard visual assessments are challenging. False positives subject patients to unnecessary, invasive biopsies and intense anxiety, while false negatives delay life-saving interventions.Integrating predictive modeling into this workflow acts as a data-driven safety net, catching patterns in tumor geometry that might escape a brief visual overview.Technical Architecture & MethodologyThis implementation draws direct inspiration from foundational research conducted by academic teams in the field, notably work by Dr. Ahmet Mert, Dr. Erdem Bilgili, and Dr. Aydin Akan, which highlighted the robust performance of maximum-margin classifiers on multidimensional biomedical datasets.Dataset ReferenceThe pipeline utilizes the classic Breast Cancer Wisconsin (Diagnostic) Dataset. It computes features capturing the visual characteristics of cell nuclei present in digitized images of a fine-needle aspirate of a breast mass.Features Analyzed: Radius, texture, perimeter, area, smoothness, compactness, concavity, concave points, symmetry, and fractal dimension.Target Class: Malignant (toxic/cancerous) vs. Benign (non-cancerous).The data is easily pulled directly into the pipeline via Scikit-Learn:Pythonfrom sklearn.datasets import load_breast_cancer
-data = load_breast_cancer()
-(For offline or custom testing, a compiled CSV version of the dataset is included directly in this repository).Performance & Optimization ResultsWhile several algorithms (such as Logistic Regression and basic Decision Trees) offer reasonable baselines, this project focuses heavily on tuning a Support Vector Machine (SVM) due to its inherent strength in handling high-dimensional feature spaces.The optimization process followed a structured two-step sequence:[ Raw Dataset ] ──> [ Feature Normalization ] ──> [ Grid Search: C & Gamma ] ──> [ 97% Target Accuracy ]
-Baseline Execution: Running the SVM model on unscaled data yielded an initial accuracy of roughly 96%.Normalization & Hyperparameter Tuning: By applying proper feature scaling (MinMax / Standard Scaling) and optimizing the regularizer parameter ($C$) alongside the kernel coefficient ($\gamma$), the model's boundary decisions became significantly tighter. This adjustment elevated the final validation accuracy to 97%.
+# Breast Cancer Classification using Machine Learning — WBCD
+
+[![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-CUDA-red.svg)](https://pytorch.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+A comprehensive machine learning pipeline for breast cancer classification, developed during a 30-day AICTE SAMARTHAN internship at **IIIT Bhagalpur**, under the **Department of Computer Science & Engineering**, mentored by **Dr. Suneel Kumar**.
+
+This project reproduces and extends the feature-selection-driven classification methodology proposed by Sharma & Mishra (2022) on the **Wisconsin Breast Cancer Dataset (WBCD)**, adding metaheuristic optimization, automated hyperparameter tuning, ensemble learning, explainability, and statistical validation.
+
+---
+
+## Internship Details
+
+| | |
+|---|---|
+| **Program** | AICTE SAMARTHAN Internship Connect 2026–27 |
+| **Host Institute** | IIIT Bhagalpur (Bhagalpur College of Engineering Campus, Sabour, Bihar) |
+| **Department** | Computer Science & Engineering — AI, Data Science, Cybersecurity & Blockchain |
+| **Mentor** | Dr. Suneel Kumar, Guest Faculty, CSE |
+| **Mode** | Offline, on-campus |
+| **Duration** | 30 days (June 15 – July 15, 2026) |
+| **Intern** | Abdul Basir, B.Tech CSE, USTM, Meghalaya |
+
+---
+
+## Project Overview
+
+Breast cancer is one of the most prevalent cancers among women globally, and early, accurate diagnosis significantly improves treatment outcomes. This project builds a complete ML pipeline to classify tumors as **benign** or **malignant** using the Wisconsin Breast Cancer dataset, comparing multiple feature selection strategies and classification algorithms to identify the most effective combination.
+
+**Reference paper reproduced:** Sharma, S. & Mishra, R. (2022) — CFS + IG + SFS feature selection with a Voting Ensemble (ANN + SVM + LR), reporting 99.41% accuracy on WBCD.
+
+---
+
+## Dataset
+
+**Wisconsin Breast Cancer Dataset (Original)** — UCI Machine Learning Repository
+
+- **699 samples**, 9 cytological features + class label
+- **Class distribution:** 458 benign, 241 malignant
+- **Features:** clump thickness, cell size uniformity, cell shape uniformity, marginal adhesion, single epithelial cell size, bare nuclei, bland chromatin, normal nucleoli, mitoses
+- **Missing values:** 16 rows (`bare_nuclei`), imputed using median
+- **Source:** [UCI WBCD](https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data)
+
+> Note: This is distinct from the 30-feature WDBC dataset (`sklearn.datasets.load_breast_cancer()`). This project deliberately uses the original 9-feature WBCD to match the reference paper's methodology.
+
+---
+
+## Pipeline Architecture
+
+```
+WBCD Dataset → Preprocessing → Feature Selection (7 methods) →
+10 Classifiers → Hyperparameter Tuning (Optuna) → 10-Fold CV →
+Ensembles (Voting + Stacking) → Evaluation → Explainability (SHAP) →
+Statistical Validation → Model Export
+```
+
+### 1. Data Preprocessing
+- Stratified 65/15/20 train/validation/test split
+- StandardScaler normalization
+- Variance threshold filtering
+
+### 2. Feature Selection (7 Methods Compared)
+| Method | Type | Description |
+|---|---|---|
+| CFS | Filter | Correlation-based feature selection |
+| Information Gain | Filter | Mutual information with target |
+| SFS (Forward/Backward) | Wrapper | Sequential greedy selection |
+| ANOVA F-test + RFE | Filter + Wrapper | Statistical + recursive elimination |
+| **PSO** | Metaheuristic | Particle Swarm Optimization (30 particles, 50 iterations) |
+| **WOA** | Metaheuristic | Whale Optimization Algorithm (30 whales, 50 iterations) |
+
+### 3. Classification Models (10 Total)
+ANN (PyTorch, sklearn-wrapped) · SVM · Random Forest · XGBoost · Logistic Regression · Naive Bayes · KNN · Decision Tree · AdaBoost · Gradient Boosting
+
+### 4. Hyperparameter Optimization
+Optuna (TPE sampler) tuning across all 10 classifiers, including the neural network's learning rate, weight decay, and epoch count.
+
+### 5. Ensemble Methods
+- **Voting Classifier:** ANN + SVM + LR (soft voting) — matches the reference paper's specification
+- **Stacking Classifier:** SVM + RF + LR (base) → XGBoost (meta-learner)
+
+### 6. Evaluation & Validation
+- Stratified 10-fold cross-validation with SMOTE applied per-fold (no data leakage)
+- Classifier × Feature-Selection-Method accuracy matrix (10×7)
+- Threshold tuning for optimal F1
+- Bootstrap 95% confidence intervals (1000 resamples)
+- McNemar's statistical significance test
+- Ablation study (component-wise contribution analysis)
+
+### 7. Explainability
+SHAP (TreeExplainer) — bar, beeswarm, and waterfall plots identifying which cytological features drive malignancy predictions.
+
+---
+
+## Key Results
+
+| Metric | Value |
+|---|---|
+| **Best Model** | K-Nearest Neighbors (KNN) |
+| **Best CV AUC-ROC** | 0.9968 |
+| **Best CV Accuracy** | 97.57% |
+| **Best Feature Selection Method** | Sequential Forward Selection (5 features) |
+| **Voting Ensemble (ANN+SVM+LR) AUC** | 0.9914 |
+| **Stacking Ensemble AUC** | 0.9710 |
+| **Optimal Decision Threshold** | 0.41 (vs. default 0.5) |
+| **PSO Selected Features** | 6 |
+| **WOA Selected Features** | 6 |
+
+Full results, confusion matrices, ROC curves, and the classifier × FS-method heatmap are available in `figures/` and `data/cv_results.csv`.
+
+---
+
+## Repository Structure
+
+```
+bc-classification-wbcd/
+├── notebooks/
+│   └── bc_internship01.ipynb       # Full pipeline (34 cells)
+├── data/
+│   ├── fs_comparison.csv
+│   ├── cv_results.csv
+│   └── clf_fs_matrix.csv
+├── figures/                         # ROC, confusion matrices, SHAP plots, heatmaps
+├── src/
+│   └── models/                      # Saved models (gitignored — see below)
+├── reports/
+│   └── daily_logs/
+├── requirements.txt
+├── README.md
+└── .gitignore
+```
+
+> Trained model files (`.pkl`, `.pth`, `.onnx`) and generated figures are excluded from version control via `.gitignore` — regenerate them by running the notebook.
+
+---
+
+## Tech Stack
+
+- **Language:** Python 3.12
+- **ML/DL:** scikit-learn, XGBoost, PyTorch
+- **Optimization:** Optuna, PySwarms (custom PSO/WOA implementations)
+- **Imbalance Handling:** imbalanced-learn (SMOTE)
+- **Explainability:** SHAP
+- **Environment:** Google Colab (CUDA GPU)
+
+---
+
+## How to Run
+
+1. Open `notebooks/bc_internship01.ipynb` in Google Colab
+2. Run all cells sequentially — the pipeline auto-installs dependencies, mounts Drive, and loads WBCD directly from UCI (no manual download needed)
+3. Outputs (figures, CSVs, trained models) are saved to the configured `BASE_DIR`
+
+```bash
+# Or locally:
+pip install -r requirements.txt
+jupyter notebook notebooks/bc_internship01.ipynb
+```
+
+---
+
+## Future Work
+
+- Extend to image-based modalities (mammography via CBIS-DDSM, histopathology via BreakHis) using EfficientNet/U-Net (placeholder branches included in the notebook)
+- Multimodal fusion of tabular + imaging features
+- Deployment as a REST API for clinical decision support
+
+---
+
+## Reference
+
+Sharma, S., & Mishra, R. (2022). *Breast cancer classification using machine learning techniques*. [Reproduced and extended methodology]
+
+---
+
+## Acknowledgements
+
+Developed under the AICTE SAMARTHAN Internship Connect 2026–27 program, IIIT Bhagalpur, with guidance from Dr. Suneel Kumar, Department of CSE.
+
+---
+
+## License
+
+This project is for academic and research purposes as part of an AICTE-sponsored internship.

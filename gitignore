@@ -1,0 +1,35 @@
+# Model artifacts (regenerable from notebook)
+*.pkl
+*.pth
+*.onnx
+
+# Generated outputs
+src/models/
+
+# Datasets (downloaded at runtime)
+*.data
+breakhis/
+breakhis.zip
+
+# Jupyter / Colab
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+
+# Environment
+.env
+venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+wandb/
+
+# Credentials — NEVER commit these
+kaggle.json
+*.pem
+*.key
