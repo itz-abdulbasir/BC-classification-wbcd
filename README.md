@@ -98,14 +98,14 @@ SHAP (TreeExplainer) — bar, beeswarm, and waterfall plots identifying which cy
 | Metric | Value |
 |---|---|
 | **Best Model** | K-Nearest Neighbors (KNN) |
-| **Best CV AUC-ROC** | 0.9968 |
+| **Best CV AUC-ROC** | 0.9938 |
 | **Best CV Accuracy** | 97.57% |
 | **Best Feature Selection Method** | Sequential Forward Selection (5 features) |
-| **Voting Ensemble (ANN+SVM+LR) AUC** | 0.9914 |
-| **Stacking Ensemble AUC** | 0.9710 |
-| **Optimal Decision Threshold** | 0.41 (vs. default 0.5) |
-| **PSO Selected Features** | 6 |
-| **WOA Selected Features** | 6 |
+| **Voting Ensemble (ANN+SVM+LR) AUC** | 0.9918 |
+| **Stacking Ensemble AUC** | 0.9804 |
+| **Optimal Decision Threshold** | 0.51 (vs. default 0.5) |
+| **PSO Selected Features** | 4 |
+| **WOA Selected Features** | 4 |
 
 Full results, confusion matrices, ROC curves, and the classifier × FS-method heatmap are available in `figures/` and `data/cv_results.csv`.
 
